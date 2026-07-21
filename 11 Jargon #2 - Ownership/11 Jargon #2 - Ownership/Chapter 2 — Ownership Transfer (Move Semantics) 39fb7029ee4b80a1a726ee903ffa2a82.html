@@ -1,0 +1,841 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Chapter 2 — Ownership Transfer (Move Semantics)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="39fb7029-ee4b-80a1-a726-ee903ffa2a82" class="page sans"><header><h1 class="page-title" dir="auto">Chapter 2 — Ownership Transfer (Move Semantics)</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="39fb7029-ee4b-8032-8bf4-feb83918eeff" class="" dir="auto">
+</p><p id="39fb7029-ee4b-809a-a386-d67aff9806b1" class="" dir="auto">In the previous chapter, we learned that every heap value in Rust has <strong>exactly one owner</strong>.</p><p id="39fb7029-ee4b-8006-a6bd-cbaa562fd0ad" class="" dir="auto">Now it&#x27;s time to answer the most important question.</p><blockquote id="39fb7029-ee4b-804e-8dbe-c880927b46b1" class="" dir="auto"><strong>What happens if someone else wants to become the owner?</strong></blockquote><p id="39fb7029-ee4b-8066-a65d-c81112b2db1f" class="" dir="auto">Let&#x27;s continue our story...</p><hr id="39fb7029-ee4b-8010-a47d-d06cd934c7a5" dir="auto"/><h1 id="39fb7029-ee4b-80b2-8f1e-f9d37a90e64d" class="" dir="auto">Rihanna Finds a New Boyfriend 😂❤️</h1><p id="39fb7029-ee4b-805c-b70b-e9f34b9d73fc" class="" dir="auto">Currently, Rihanna is happily dating <strong>s1</strong>.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="39fb7029-ee4b-8098-9a9e-d6637d357216" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80ae-9764-ddae68df79ed" class="" dir="auto">Everything is going well.</p><p id="39fb7029-ee4b-8020-990a-dc46d4e7e81b" class="" dir="auto">One day, a new person named <strong>s2</strong> enters her life.</p><p id="39fb7029-ee4b-8098-b142-d42348eacb48" class="" dir="auto">He says,</p><blockquote id="39fb7029-ee4b-80f0-9282-ed747a169e03" class="" dir="auto">&quot;Hi Rihanna, I want to date you.&quot;</blockquote><p id="39fb7029-ee4b-809a-b0bd-d925ead20efd" class="" dir="auto">Now remember Rihanna&#x27;s rules:</p><p id="39fb7029-ee4b-80aa-8946-fb86d091c743" class="" dir="auto">✅ She always wants a boyfriend.</p><p id="39fb7029-ee4b-8060-8d17-d5127b07ba32" class="" dir="auto">❌ She never dates two people at the same time.</p><p id="39fb7029-ee4b-80f6-8905-f9a60cfe67cf" class="" dir="auto">❌ She doesn&#x27;t believe in casual relationships.</p><p id="39fb7029-ee4b-803f-9fb4-d039fff09457" class="" dir="auto">Only one <strong>serious relationship</strong> is allowed.</p><p id="39fb7029-ee4b-8049-82c2-ecad67bb0766" class="" dir="auto">So what happens?</p><p id="39fb7029-ee4b-804d-8c97-fe294fb5a5d2" class="" dir="auto">She immediately breaks up with <strong>s1</strong>...</p><p id="39fb7029-ee4b-80e5-9b2b-d12aefd94f39" class="" dir="auto">and starts dating <strong>s2</strong>.</p><pre id="39fb7029-ee4b-80b8-9cb2-d03501b0c204" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80fc-a026-de263f47681f" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-8051-a784-f3aeb9223525" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">After
+
+s1 💔
+
+s2 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8056-af0b-d61a283c4230" class="" dir="auto">Notice something.</p><p id="39fb7029-ee4b-8069-a8ba-d251e9d55ad9" class="" dir="auto">Rihanna didn&#x27;t create another copy of herself.</p><p id="39fb7029-ee4b-807a-a755-c015d04369ab" class="" dir="auto">She simply <strong>changed her owner</strong>.</p><p id="39fb7029-ee4b-80c4-8bd9-d5b520cc3282" class="" dir="auto">This is exactly what Rust does.</p><hr id="39fb7029-ee4b-8045-9cfd-f165899b3a26" dir="auto"/><h1 id="39fb7029-ee4b-8085-9379-e76f14e562cf" class="" dir="auto">Let&#x27;s See It in Rust</h1><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" integrity="sha512-R/HpMlNfZZV6DxMhNz1dYJbBaPBVSOCqX8imo3uGUurhPDHRcXrBxkEVOjawwUwTMfOqT6t1eLYYQXIjFWCX/A==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="39fb7029-ee4b-80aa-836e-efb2b0f00f45" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+    let s1 = String::from(&quot;hello&quot;);
+
+    let s2 = s1;
+
+    println!(&quot;{}&quot;, s2);
+}</code></pre><p id="39fb7029-ee4b-804a-94fc-da4f8da4f6f0" class="" dir="auto">This program works perfectly.</p><p id="39fb7029-ee4b-80ad-8d7a-fa154df650d4" class="" dir="auto">Output</p><pre id="39fb7029-ee4b-8080-8ce5-c800b320eda9" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">hello</code></pre><p id="39fb7029-ee4b-8045-b9c0-fc913cef3e31" class="" dir="auto">Many beginners think this line</p><pre id="39fb7029-ee4b-8067-92cc-fceb41ede6b1" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s2 = s1;</code></pre><p id="39fb7029-ee4b-805f-8924-ce46f3455edf" class="" dir="auto">copies the string.</p><p id="39fb7029-ee4b-8050-83ec-cd0f959e144c" class="" dir="auto"><strong>It does NOT.</strong></p><p id="39fb7029-ee4b-80e4-8c2c-cabdff887b33" class="" dir="auto">It transfers the ownership.</p><p id="39fb7029-ee4b-809a-a16a-f41a473a5bb9" class="" dir="auto">This process is called a <strong>Move</strong>.</p><hr id="39fb7029-ee4b-80e6-8403-f88bd6fd21c6" dir="auto"/><h1 id="39fb7029-ee4b-804c-8f8e-e49089d383af" class="" dir="auto">What Actually Happens?</h1><p id="39fb7029-ee4b-80ac-8f2b-e7b17a293a8c" class="" dir="auto">Initially,</p><pre id="39fb7029-ee4b-8085-954f-d2e3040375d3" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s1 = String::from(&quot;hello&quot;);</code></pre><p id="39fb7029-ee4b-8014-8193-f97b337b0ca3" class="" dir="auto">Memory looks like this:</p><pre id="39fb7029-ee4b-8038-9163-e5835d67d3c6" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">STACK                              HEAP
+
++------------------+          +----------------+
+| s1               | -------&gt; | h e l l o      |
+| ptr              |          +----------------+
+| len = 5          |
+| cap = 5          |
++------------------+</code></pre><p id="39fb7029-ee4b-80fd-a4ea-cef32a0c9900" class="" dir="auto">Here,</p><p id="39fb7029-ee4b-8030-83fb-d33ea2228d7d" class="" dir="auto"><strong>s1 owns the heap memory.</strong></p><hr id="39fb7029-ee4b-808c-b8ed-c670aeeb9d8a" dir="auto"/><p id="39fb7029-ee4b-8023-92e8-c9b43c57b934" class="" dir="auto">Now this line executes.</p><pre id="39fb7029-ee4b-80b9-937e-f022de40ff3b" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s2 = s1;</code></pre><p id="39fb7029-ee4b-8074-9446-cf5c77765b8f" class="" dir="auto">Rust <strong>does not copy</strong> the heap data.</p><p id="39fb7029-ee4b-8095-a579-e8d0ef45ed78" class="" dir="auto">Instead,</p><p id="39fb7029-ee4b-8096-b535-dfdfd515b09c" class="" dir="auto">ownership moves from <strong>s1</strong> to <strong>s2</strong>.</p><pre id="39fb7029-ee4b-80e8-8acc-dbbd5c63b9b9" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">STACK                              HEAP
+
++------------------+
+| s1 ❌ Invalid    |
++------------------+
+
++------------------+          +----------------+
+| s2               | -------&gt; | h e l l o      |
+| ptr              |          +----------------+
+| len = 5          |
+| cap = 5          |
++------------------+</code></pre><p id="39fb7029-ee4b-80f0-a281-f8b5e2d6ce11" class="" dir="auto">The heap memory never moved.</p><p id="39fb7029-ee4b-8034-98fc-cf2cce52bbd0" class="" dir="auto">Only the ownership changed.</p><hr id="39fb7029-ee4b-809b-8077-efce3baa4100" dir="auto"/><h1 id="39fb7029-ee4b-8008-a7b3-c47cd16c12cf" class="" dir="auto">What Happens to s1?</h1><p id="39fb7029-ee4b-800c-95dc-c02c4c106ef4" class="" dir="auto">Remember Rihanna.</p><p id="39fb7029-ee4b-80e1-8f23-c157a865a2eb" class="" dir="auto">She has already moved on.</p><p id="39fb7029-ee4b-805d-a32a-faf1eae3ff87" class="" dir="auto">Poor <strong>s1</strong> is now...</p><blockquote id="39fb7029-ee4b-805e-ba5e-e75ca66cb12c" class="" dir="auto"><strong>The Ex.</strong> 💔😂</blockquote><p id="39fb7029-ee4b-80e7-8807-e6b8f65af325" class="" dir="auto">He no longer has any relationship with Rihanna.</p><p id="39fb7029-ee4b-8051-98d6-d27012134e9e" class="" dir="auto">Similarly,</p><p id="39fb7029-ee4b-80a8-b310-e02362909e9a" class="" dir="auto">after ownership moves,</p><p id="39fb7029-ee4b-80dc-b436-cee2c25a7bb6" class="" dir="auto"><strong>s1 becomes invalid.</strong></p><hr id="39fb7029-ee4b-8002-805e-d04fac72c85d" dir="auto"/><p id="39fb7029-ee4b-8026-8a46-e5fa27553501" class="" dir="auto">So if we write</p><pre id="39fb7029-ee4b-8021-8799-f16ce8dd9211" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+    let s1 = String::from(&quot;hello&quot;);
+
+    let s2 = s1;
+
+    println!(&quot;{}&quot;, s1);
+}</code></pre><p id="39fb7029-ee4b-800b-9c2e-edb47679d2a1" class="" dir="auto">Rust immediately says</p><pre id="39fb7029-ee4b-807b-bf47-f1fabc02a43f" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">error[E0382]: borrow of moved value: `s1`</code></pre><p id="39fb7029-ee4b-802b-b7fb-de112f6b4415" class="" dir="auto">In simple English,</p><p id="39fb7029-ee4b-8061-8c78-c7645274f32a" class="" dir="auto">Rust is saying</p><blockquote id="39fb7029-ee4b-8025-8070-c90b0f430493" class="" dir="auto">&quot;Sorry bro...</blockquote><blockquote id="39fb7029-ee4b-80fc-9f64-da88738e3e16" class="" dir="auto">She&#x27;s your ex now.</blockquote><blockquote id="39fb7029-ee4b-8014-af60-ea526aeaa836" class="" dir="auto">You don&#x27;t own her anymore.&quot;</blockquote><p id="39fb7029-ee4b-80ad-bff5-cbbd4d4c3c61" class="" dir="auto">😂😂</p><hr id="39fb7029-ee4b-80f6-9753-cc826b17aeba" dir="auto"/><h1 id="39fb7029-ee4b-807b-a71f-d6fd97cd6a2b" class="" dir="auto">Why Doesn&#x27;t Rust Copy Automatically?</h1><p id="39fb7029-ee4b-800a-865b-cfb63f9c82ed" class="" dir="auto">Imagine Rust allowed this.</p><pre id="39fb7029-ee4b-8054-a13d-faf20424a5aa" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna ❤️ s2</code></pre><p id="39fb7029-ee4b-80a1-bae0-db86b0d1b526" class="" dir="auto">Now there are two owners.</p><p id="39fb7029-ee4b-8031-be20-c32480dd32db" class="" dir="auto">Everything looks fine...</p><p id="39fb7029-ee4b-8028-b731-ca252328fa3b" class="" dir="auto">until one boyfriend breaks up.</p><p id="39fb7029-ee4b-8024-8790-d326d871ed5b" class="" dir="auto">Suppose <strong>s1</strong> says</p><blockquote id="39fb7029-ee4b-803a-a8b2-f0b59a47d4cc" class="" dir="auto">&quot;Delete all our memories.&quot;</blockquote><p id="39fb7029-ee4b-80be-807d-ea8aa15a727f" class="" dir="auto">Rust deletes the heap memory.</p><pre id="39fb7029-ee4b-803f-bfa0-cf6eda31727d" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Heap Memory
+
+❌ Deleted</code></pre><p id="39fb7029-ee4b-80ec-b926-e1bcbaec4faa" class="" dir="auto">But <strong>s2</strong> still thinks Rihanna is his girlfriend.</p><p id="39fb7029-ee4b-80f3-b01c-e6a9c6335292" class="" dir="auto">Now <strong>s2</strong> points to memory that no longer exists.</p><p id="39fb7029-ee4b-8067-a313-c40aded495ae" class="" dir="auto">This creates a <strong>Dangling Pointer</strong>.</p><hr id="39fb7029-ee4b-80de-af21-c912149e4a84" dir="auto"/><p id="39fb7029-ee4b-80ad-9ddc-f4deaecbe793" class="" dir="auto">Or imagine both boyfriends say</p><blockquote id="39fb7029-ee4b-80f8-856c-fc06f13e7a2e" class="" dir="auto">&quot;Delete our memories.&quot;</blockquote><p id="39fb7029-ee4b-8095-9d20-ed4535a9601c" class="" dir="auto">Now both try to delete the same memory.</p><p id="39fb7029-ee4b-800c-928f-eb6c86979cb7" class="" dir="auto">First delete</p><p id="39fb7029-ee4b-8060-86be-ec1d9736606c" class="" dir="auto">✅ Success</p><p id="39fb7029-ee4b-80bd-8912-de252cbd881b" class="" dir="auto">Second delete</p><p id="39fb7029-ee4b-80ef-8a2f-fbe40a91f4b6" class="" dir="auto">💥 Boom!</p><p id="39fb7029-ee4b-8069-9430-dd241a477dc4" class="" dir="auto">Memory has already been deleted.</p><p id="39fb7029-ee4b-80ab-84a0-e2e80d01350a" class="" dir="auto">This is called a</p><blockquote id="39fb7029-ee4b-8099-bc21-fe70b1d46faf" class="" dir="auto"><strong>Double Free Error</strong></blockquote><p id="39fb7029-ee4b-805d-9ef6-fa8a8f71f621" class="" dir="auto">These bugs are extremely dangerous.</p><p id="39fb7029-ee4b-80d9-8155-e0f4cb361929" class="" dir="auto">Instead of trying to detect these problems later,</p><p id="39fb7029-ee4b-8046-bbef-d000c3ddb49e" class="" dir="auto">Rust completely prevents them.</p><p id="39fb7029-ee4b-80f6-87b9-f71c058e380b" class="" dir="auto">Its rule is simple:</p><blockquote id="39fb7029-ee4b-80ad-a37f-db3f155daa02" class="" dir="auto"><strong>One owner.</strong></blockquote><p id="39fb7029-ee4b-80a9-9086-f599929a72e5" class="" dir="auto">No exceptions.</p><hr id="39fb7029-ee4b-8047-af96-ddf585a330dd" dir="auto"/><h1 id="39fb7029-ee4b-80c9-ae9c-ed5e4e2ed9e4" class="" dir="auto">Ownership Moves Only for Heap Data</h1><p id="39fb7029-ee4b-80a9-9a59-dec1aa801c96" class="" dir="auto">This behaviour happens for heap-allocated data like:</p><ul id="39fb7029-ee4b-8039-87c0-ce8592b518c3" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>String</code></li></ul><ul id="39fb7029-ee4b-806e-83f9-d148e78632a5" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>Vec</code></li></ul><ul id="39fb7029-ee4b-808b-a304-c79bf49b7116" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><code>HashMap</code></li></ul><p id="39fb7029-ee4b-803a-8606-d2b46e8d1ad5" class="" dir="auto">Example</p><pre id="39fb7029-ee4b-8010-987a-fd755b878c19" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s1 = String::from(&quot;Hello&quot;);
+let s2 = s1;</code></pre><p id="39fb7029-ee4b-80d6-8c0b-cc01d1e5a72f" class="" dir="auto">Ownership moves.</p><hr id="39fb7029-ee4b-804f-a3a4-e8bbade3270b" dir="auto"/><h1 id="39fb7029-ee4b-80b6-b66d-fe1b8aedacdb" class="" dir="auto">But Numbers Behave Differently</h1><p id="39fb7029-ee4b-8073-8ec0-f6613678f4a2" class="" dir="auto">Look at this example.</p><pre id="39fb7029-ee4b-8076-87b0-f88fec655903" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+
+    let x = 10;
+
+    let y = x;
+
+    println!(&quot;{}&quot;, x);
+
+    println!(&quot;{}&quot;, y);
+}</code></pre><p id="39fb7029-ee4b-801b-95b0-ffcbcf37507f" class="" dir="auto">Output</p><pre id="39fb7029-ee4b-807c-a340-dc23da605b81" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">10
+10</code></pre><p id="39fb7029-ee4b-80aa-b9c3-eaee84c2cb0c" class="" dir="auto">Wait...</p><p id="39fb7029-ee4b-805f-a959-c44abd71640a" class="" dir="auto">Didn&#x27;t Ownership say only one owner?</p><p id="39fb7029-ee4b-80b3-b8f7-c03848769754" class="" dir="auto">Why is this allowed?</p><hr id="39fb7029-ee4b-806c-90ce-e2345e5d7dd9" dir="auto"/><p id="39fb7029-ee4b-8055-b08f-f3056b003923" class="" dir="auto">Because integers live on the <strong>Stack</strong>.</p><p id="39fb7029-ee4b-800e-bfee-fb752b3b1c82" class="" dir="auto">An <code>i32</code> is only <strong>4 bytes</strong>.</p><p id="39fb7029-ee4b-805e-9c9d-fbf033b0ffd6" class="" dir="auto">Copying 4 bytes is extremely cheap.</p><p id="39fb7029-ee4b-80ce-abf4-d1fb39cb05d8" class="" dir="auto">Instead of moving ownership,</p><p id="39fb7029-ee4b-8052-9cab-f73b890e7ddb" class="" dir="auto">Rust simply copies the value.</p><pre id="39fb7029-ee4b-806d-86a0-ed982ba03794" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+x = 10</code></pre><p id="39fb7029-ee4b-8024-88da-df53469f7a2b" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-80ec-a988-e8ccd7db9b6a" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">After
+
+x = 10
+
+y = 10</code></pre><p id="39fb7029-ee4b-80cb-b1f2-efc900e935f5" class="" dir="auto">Both variables now contain their own independent copy.</p><p id="39fb7029-ee4b-8044-872b-de6935e9a93f" class="" dir="auto">No heap memory exists.</p><p id="39fb7029-ee4b-808f-a564-faa4517705a9" class="" dir="auto">No ownership transfer is required.</p><hr id="39fb7029-ee4b-805d-8e0a-d4c76a17bd51" dir="auto"/><h1 id="39fb7029-ee4b-8089-9d17-c0a94e006a4f" class="" dir="auto">Copy vs Move</h1><p id="39fb7029-ee4b-80fd-9359-e8f471d2077a" class="" dir="auto">This is one of the most important differences in Rust.</p><h3 id="39fb7029-ee4b-80c8-9fc8-f5926132dfbc" class="" dir="auto">Stack Data</h3><pre id="39fb7029-ee4b-8035-9ff5-d1447528f1eb" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let x = 10;
+
+let y = x;</code></pre><p id="39fb7029-ee4b-806e-9727-e32d099fa901" class="" dir="auto">Rust performs</p><blockquote id="39fb7029-ee4b-804f-9c91-ed24a4ea36af" class="" dir="auto"><strong>Copy</strong></blockquote><pre id="39fb7029-ee4b-8094-a8cc-e4af86a095f8" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">x = 10
+
+↓
+
+x = 10
+
+y = 10</code></pre><p id="39fb7029-ee4b-8041-bbed-f001b9fdffa6" class="" dir="auto">Both variables remain valid.</p><hr id="39fb7029-ee4b-80d7-822a-ef59c181d07b" dir="auto"/><h3 id="39fb7029-ee4b-80b5-a781-cc2f7d0269d1" class="" dir="auto">Heap Data</h3><pre id="39fb7029-ee4b-80f3-bee1-d1e8792e29da" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s1 = String::from(&quot;Hello&quot;);
+
+let s2 = s1;</code></pre><p id="39fb7029-ee4b-803b-a0e0-c49036b4825c" class="" dir="auto">Rust performs</p><blockquote id="39fb7029-ee4b-8075-8bcb-e7cb731a8fc0" class="" dir="auto"><strong>Move</strong></blockquote><pre id="39fb7029-ee4b-80d0-90cc-eb4d24596df7" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+s1 ❤️ Hello</code></pre><p id="39fb7029-ee4b-80f9-aa36-eb49da22d244" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-8079-b901-d55c5a8dc6e4" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">After
+
+s1 💔
+
+s2 ❤️ Hello</code></pre><p id="39fb7029-ee4b-80b1-9571-e6834e57c0fe" class="" dir="auto">Only <strong>s2</strong> remains valid.</p><hr id="39fb7029-ee4b-8061-adbc-ce67804e7370" dir="auto"/><h1 id="39fb7029-ee4b-80c6-9ddb-f971d2a5224a" class="" dir="auto">Why Is This Called Move Semantics?</h1><p id="39fb7029-ee4b-8007-b44e-df1f1b53d65b" class="" dir="auto">The word <strong>Move</strong> simply means</p><blockquote id="39fb7029-ee4b-8086-beed-f4a5d095c273" class="" dir="auto">&quot;Transfer ownership from one variable to another.&quot;</blockquote><p id="39fb7029-ee4b-8010-9320-ef4cfa6226f1" class="" dir="auto">It does <strong>not</strong> necessarily mean moving the actual heap data.</p><p id="39fb7029-ee4b-8043-ac8c-ece00c2d2f82" class="" dir="auto">The heap memory usually stays where it is.</p><p id="39fb7029-ee4b-800e-aee2-dae743e0734e" class="" dir="auto">Only the ownership changes.</p><hr id="39fb7029-ee4b-803c-b043-cbe6e9db0fb8" dir="auto"/><h1 id="39fb7029-ee4b-801e-bbef-c700b7999e42" class="" dir="auto">Ownership Prevents Memory Bugs</h1><p id="39fb7029-ee4b-80f0-97aa-ea7adbf914aa" class="" dir="auto">Because only one owner exists,</p><p id="39fb7029-ee4b-809b-8156-eed85b161735" class="" dir="auto">Rust automatically prevents many dangerous bugs such as</p><ul id="39fb7029-ee4b-80be-9575-e544f31e1080" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Dangling pointers</li></ul><ul id="39fb7029-ee4b-80e2-9826-c324ec8e968d" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Double free errors</li></ul><ul id="39fb7029-ee4b-809f-b273-c1925ef4cdd1" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use-after-free errors</li></ul><p id="39fb7029-ee4b-80cd-b93c-ef5c8cab182f" class="" dir="auto">All of these are caught <strong>before the program even runs.</strong></p><p id="39fb7029-ee4b-8090-a03d-cac8125f2b34" class="" dir="auto">That&#x27;s one of Rust&#x27;s biggest strengths.</p><hr id="39fb7029-ee4b-8010-a34d-f14f0fb9e0d4" dir="auto"/><h1 id="39fb7029-ee4b-802c-8f53-df3375e3050d" class="" dir="auto">Poor s1 😂</h1><p id="39fb7029-ee4b-8010-9977-cc618af992e2" class="" dir="auto">Let&#x27;s summarize Rihanna&#x27;s love life.</p><p id="39fb7029-ee4b-80dc-ba4a-f7e25e6ee9ed" class="" dir="auto">Initially</p><pre id="39fb7029-ee4b-808c-8786-eeb3276b6ba1" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8010-84e4-ff866fb1a9dd" class="" dir="auto">Then</p><pre id="39fb7029-ee4b-80ea-a811-dbcf8b79e676" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s2 enters...</code></pre><p id="39fb7029-ee4b-803a-92a7-ee04076959ec" class="" dir="auto">Rihanna says</p><blockquote id="39fb7029-ee4b-806f-8cd0-edb6824c6ba7" class="" dir="auto">&quot;Sorry s1...</blockquote><p id="39fb7029-ee4b-8015-8151-da98b24967c5" class="" dir="auto">I&#x27;ve moved on.&quot;</p><p id="39fb7029-ee4b-8028-85c5-fc16a0ccc12e" class="" dir="auto">Now</p><pre id="39fb7029-ee4b-8009-b4a4-f271945f4c97" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 💔
+
+s2 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8020-aea4-d96a11850f2d" class="" dir="auto">If <strong>s1</strong> later sends her a message</p><pre id="39fb7029-ee4b-80e3-80a9-c4b3fb3104b5" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">println!(&quot;{}&quot;, s1);</code></pre><p id="39fb7029-ee4b-805d-8e3a-c23a66a1d737" class="" dir="auto">Rust replies</p><blockquote id="39fb7029-ee4b-8078-ba6a-fc9d369ab67b" class="" dir="auto">❌ &quot;Access denied.&quot;</blockquote><blockquote id="39fb7029-ee4b-80ce-866d-f44a39e8929a" class="" dir="auto">&quot;She&#x27;s not your girlfriend anymore.&quot;</blockquote><p id="39fb7029-ee4b-8076-b116-fd1b96e98ff6" class="" dir="auto">😂</p><hr id="39fb7029-ee4b-80c9-8f3c-f45c6d2980d1" dir="auto"/><h1 id="39fb7029-ee4b-80f7-8a80-f60c2ab69be3" class="" dir="auto">But What If...</h1><p id="39fb7029-ee4b-80b3-be37-fac23ef6c118" class="" dir="auto">At this point, you might wonder:</p><blockquote id="39fb7029-ee4b-80cc-9569-d868382180dc" class="" dir="auto">&quot;What if <strong>s1</strong> doesn&#x27;t want to lose Rihanna?&quot;</blockquote><p id="39fb7029-ee4b-80fd-b08a-cd07297a7651" class="" dir="auto">Or,</p><blockquote id="39fb7029-ee4b-8055-9645-c0cc8397a205" class="" dir="auto">&quot;Can we make an identical twin of Rihanna?&quot;</blockquote><p id="39fb7029-ee4b-8048-9c16-c1976a48bf1e" class="" dir="auto">Yes!</p><p id="39fb7029-ee4b-806f-a474-f88d5e927713" class="" dir="auto">Rust provides a method called</p><pre id="39fb7029-ee4b-8012-912f-d1dfba28c5fc" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">clone()</code></pre><p id="39fb7029-ee4b-800c-a252-d160eec4caff" class="" dir="auto">which creates a completely new copy of the heap data.</p><p id="39fb7029-ee4b-80c0-8190-d97d66d672c3" class="" dir="auto">Now both people can have their own Rihanna.</p><p id="39fb7029-ee4b-806c-ae13-e8848d06f612" class="" dir="auto">We&#x27;ll study that in the next chapter. 😄</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

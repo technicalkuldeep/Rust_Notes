@@ -1,0 +1,846 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Chapter 1 — Ownership (Introduction)</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="39fb7029-ee4b-80cf-85c2-eaf135aec124" class="page sans"><header><h1 class="page-title" dir="auto">Chapter 1 — Ownership (Introduction)</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="39fb7029-ee4b-8099-8eb9-db55c15e3b20" class="" dir="auto">
+</p><blockquote id="39fb7029-ee4b-8031-81a6-fb35d7a651a6" class="" dir="auto"><strong>&quot;Ownership is the heart of Rust.&quot;</strong></blockquote><p id="39fb7029-ee4b-80ac-9221-c79457370955" class="" dir="auto">If someone asks,</p><blockquote id="39fb7029-ee4b-80e4-8d86-e2a2d112f95e" class="" dir="auto"><strong>&quot;What makes Rust different from C++, Java, Python, JavaScript or Go?&quot;</strong></blockquote><p id="39fb7029-ee4b-8004-be6b-fb14d6112f30" class="" dir="auto">The answer is almost always:</p><blockquote id="39fb7029-ee4b-8048-a245-cc35207ad900" class="" dir="auto"><strong>Ownership.</strong></blockquote><p id="39fb7029-ee4b-809e-9065-d9867b54f7cb" class="" dir="auto">Almost every advanced Rust concept—<strong>Borrowing, References, Lifetimes, Smart Pointers, Concurrency</strong>—is built on top of Ownership.</p><p id="39fb7029-ee4b-8039-9e28-cd84353bd672" class="" dir="auto">So before learning anything else, let&#x27;s understand Ownership in the easiest (and funniest 😄) way possible.</p><hr id="39fb7029-ee4b-805e-ac6b-df1fb0bee22d" dir="auto"/><h1 id="39fb7029-ee4b-8072-94c8-e22e39e335f8" class="" dir="auto">Why Does Rust Need Ownership?</h1><p id="39fb7029-ee4b-80e6-b89c-cf6cc02167b8" class="" dir="auto">In the previous chapter, we learned that programs continuously allocate and deallocate memory while they are running.</p><p id="39fb7029-ee4b-8032-9638-da4c37017757" class="" dir="auto">The big question is:</p><blockquote id="39fb7029-ee4b-80c5-95fc-dd6f153816de" class="" dir="auto"><strong>Who is responsible for cleaning up that memory?</strong></blockquote><p id="39fb7029-ee4b-800b-b3a1-d642aedef013" class="" dir="auto">Different languages have different answers.</p><table id="39fb7029-ee4b-80a5-934d-f2e55c123149" class="simple-table" dir="ltr"><thead class="simple-table-header"><tr id="39fb7029-ee4b-801a-b7c6-df7cc3dffce4" dir="ltr"><th id="|&gt;Iu" class="simple-table-header-color simple-table-header">Language</th><th id="rcQR" class="simple-table-header-color simple-table-header">Memory Management</th></tr></thead><tbody><tr id="39fb7029-ee4b-80b2-82b6-c7b2688dc9de" dir="ltr"><td id="|&gt;Iu" class="">Java / JavaScript</td><td id="rcQR" class="">Garbage Collector</td></tr><tr id="39fb7029-ee4b-803e-b79b-fb8059f89d4a" dir="ltr"><td id="|&gt;Iu" class="">C</td><td id="rcQR" class="">Programmer manually frees memory</td></tr><tr id="39fb7029-ee4b-8049-ae2f-ed6dbb7ce1e2" dir="ltr"><td id="|&gt;Iu" class="">Rust</td><td id="rcQR" class="">Ownership Model</td></tr></tbody></table><p id="39fb7029-ee4b-804d-b8da-f131be64503d" class="" dir="auto">Rust doesn&#x27;t have a Garbage Collector.</p><p id="39fb7029-ee4b-8097-bd4f-f3fe4bcc7b1b" class="" dir="auto">It also doesn&#x27;t expect programmers to manually free memory like C.</p><p id="39fb7029-ee4b-80c7-b769-c4a00f690e78" class="" dir="auto">Instead, Rust invented something called the <strong>Ownership Model</strong>.</p><hr id="39fb7029-ee4b-8086-8c01-c87b576da013" dir="auto"/><h1 id="39fb7029-ee4b-8053-824e-c91f5aed7488" class="" dir="auto">Meet Rihanna 👑❤️</h1><figure id="39fb7029-ee4b-8013-8064-ef29b6d5301c" class="image" data-notion-image="Chapter%201%20%E2%80%94%20Ownership%20(Introduction)/image.png" dir="ltr"><a href="Chapter%201%20%E2%80%94%20Ownership%20(Introduction)/image.png"><img style="width:692px" src="Chapter%201%20%E2%80%94%20Ownership%20(Introduction)/image.png"/></a></figure><p id="39fb7029-ee4b-804a-a946-eb9a7bf3944e" class="" dir="auto">There is a girl named <strong>Rihanna</strong>.</p><p id="39fb7029-ee4b-803e-8bb5-f9163cb9920e" class="" dir="auto">She has made two very strict relationship rules.</p><hr id="39fb7029-ee4b-80b9-89c1-c89d86ec731b" dir="auto"/><h2 id="39fb7029-ee4b-8029-a569-c64163941924" class="" dir="auto">Rule #1</h2><p id="39fb7029-ee4b-80cb-94db-cb97e0bc628c" class="" dir="auto">Rihanna says,</p><blockquote id="39fb7029-ee4b-809a-8b12-e100a80e00c8" class="" dir="auto"><strong>&quot;I never want to stay single.&quot;</strong></blockquote><p id="39fb7029-ee4b-802b-a6f1-cc0d40db1963" class="" dir="auto">If one day she has <strong>no boyfriend (owner)</strong>...</p><p id="39fb7029-ee4b-808b-9317-c379150dd23c" class="" dir="auto">💀 <strong>She disappears forever.</strong></p><hr id="39fb7029-ee4b-8072-b1e2-cfad11350a9d" dir="auto"/><p id="39fb7029-ee4b-8031-8272-ce9cb38cd03b" class="" dir="auto">Sounds dramatic?</p><p id="39fb7029-ee4b-805d-b2f3-d20af8850cc6" class="" dir="auto">That&#x27;s exactly how <strong>heap memory</strong> behaves in Rust.</p><p id="39fb7029-ee4b-8083-bf5d-dce7f9ee99fe" class="" dir="auto">If a heap value has <strong>no owner</strong>, Rust immediately removes it from memory.</p><hr id="39fb7029-ee4b-8098-9d25-d703aaa4a2af" dir="auto"/><h2 id="39fb7029-ee4b-802b-82af-fad84561952e" class="" dir="auto">Rule #2</h2><p id="39fb7029-ee4b-803a-89f2-c3356b4e10f3" class="" dir="auto">Rihanna says,</p><blockquote id="39fb7029-ee4b-80d2-a737-df91499f2073" class="" dir="auto"><strong>&quot;I&#x27;m only interested in serious relationships.&quot;</strong></blockquote><p id="39fb7029-ee4b-803e-8012-ccd9564b0ed5" class="" dir="auto">She <strong>never</strong> wants:</p><p id="39fb7029-ee4b-8050-b2fa-c3f0ae0e4344" class="" dir="auto">❌ Casual relationships</p><p id="39fb7029-ee4b-8003-b408-d04b4e2e4358" class="" dir="auto">❌ Situationships</p><p id="39fb7029-ee4b-800b-a396-fa6d44efff74" class="" dir="auto">❌ Love triangles</p><p id="39fb7029-ee4b-8037-b85c-eb601af874fe" class="" dir="auto">❌ Two boyfriends at the same time</p><p id="39fb7029-ee4b-80e8-aa77-d4fc9f78fb53" class="" dir="auto">She only allows <strong>ONE boyfriend (owner).</strong></p><hr id="39fb7029-ee4b-80af-a5fa-eaf8f9e79f81" dir="auto"/><p id="39fb7029-ee4b-8005-bc82-e51cc06b0d22" class="" dir="auto">This is exactly Rust&#x27;s first ownership rule.</p><blockquote id="39fb7029-ee4b-8010-b46f-cb80d1148a5d" class="" dir="auto"><strong>Every value in Rust can have only ONE owner at a time.</strong></blockquote><hr id="39fb7029-ee4b-80ed-a7b7-ca7d707b043f" dir="auto"/><h1 id="39fb7029-ee4b-80b2-ae49-d48ae56c5d66" class="" dir="auto">The Three Rules of Ownership</h1><p id="39fb7029-ee4b-8020-b2dd-cf57a5505aeb" class="" dir="auto">Rust follows three simple ownership rules.</p><hr id="39fb7029-ee4b-806a-973e-c9c44ee7d44f" dir="auto"/><h2 id="39fb7029-ee4b-8039-9bbe-e82b911851b4" class="" dir="auto">Rule 1</h2><p id="39fb7029-ee4b-80d3-94ee-d5a0aa700296" class="" dir="auto"><strong>Every value has exactly one owner.</strong></p><p id="39fb7029-ee4b-806e-8d66-e0b1954f36b2" class="" dir="auto">Example:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" integrity="sha512-R/HpMlNfZZV6DxMhNz1dYJbBaPBVSOCqX8imo3uGUurhPDHRcXrBxkEVOjawwUwTMfOqT6t1eLYYQXIjFWCX/A==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="39fb7029-ee4b-806d-91cd-c040501ef3fa" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s = String::from(&quot;Hello&quot;);</code></pre><p id="39fb7029-ee4b-8096-8f84-d6efc57d8275" class="" dir="auto">Here,</p><pre id="39fb7029-ee4b-80e9-a0b2-d64cf664d74c" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">String (&quot;Hello&quot;)
+
+      ▲
+      │
+      │
+      s</code></pre><p id="39fb7029-ee4b-8093-942e-e157d1fb20c2" class="" dir="auto">The variable <code>s</code> is the owner.</p><hr id="39fb7029-ee4b-8004-afbf-e6f55991b088" dir="auto"/><h2 id="39fb7029-ee4b-8097-9bac-e65144469097" class="" dir="auto">Rule 2</h2><p id="39fb7029-ee4b-8002-a563-fdf5ba8ad2ba" class="" dir="auto"><strong>A value can have only one owner at a time.</strong></p><p id="39fb7029-ee4b-80fc-bec2-c20a78f029ce" class="" dir="auto">There cannot be two owners for the same heap value.</p><p id="39fb7029-ee4b-8041-a4a1-d2da46be3687" class="" dir="auto">Think of Rihanna again.</p><p id="39fb7029-ee4b-80ec-874f-d3605ca1fcef" class="" dir="auto">She refuses to date two people simultaneously.</p><hr id="39fb7029-ee4b-80d6-9075-e4d887ea208f" dir="auto"/><h2 id="39fb7029-ee4b-80dc-a1c0-eac03ea3f5f7" class="" dir="auto">Rule 3</h2><p id="39fb7029-ee4b-800f-9e53-cc3a454e3b70" class="" dir="auto"><strong>When the owner goes out of scope, the value is destroyed automatically.</strong></p><p id="39fb7029-ee4b-8080-99e2-e3907bf105a1" class="" dir="auto">If Rihanna suddenly has no boyfriend...</p><p id="39fb7029-ee4b-80a7-878d-d877ab6a9701" class="" dir="auto">💀</p><p id="39fb7029-ee4b-803b-86f7-efc272739aaf" class="" dir="auto">She disappears.</p><p id="39fb7029-ee4b-80bd-ad9c-f4b8bc741b86" class="" dir="auto">Similarly,</p><p id="39fb7029-ee4b-803e-b0d7-e308f24ab0da" class="" dir="auto">If a heap value has no owner,</p><p id="39fb7029-ee4b-80f5-9398-cd3aa178e431" class="" dir="auto">Rust automatically frees its memory.</p><p id="39fb7029-ee4b-8080-a553-c706ddd78caf" class="" dir="auto">No Garbage Collector.</p><p id="39fb7029-ee4b-80bf-a675-e5aad2772db7" class="" dir="auto">No manual <code>free()</code>.</p><p id="39fb7029-ee4b-807d-8b1e-d100b92b0826" class="" dir="auto">Rust handles everything automatically.</p><hr id="39fb7029-ee4b-8031-8ff4-f013db571b04" dir="auto"/><h1 id="39fb7029-ee4b-8011-82c5-c965705854e9" class="" dir="auto">Ownership of Stack Values</h1><p id="39fb7029-ee4b-80d3-b5e2-cfbc80649b57" class="" dir="auto">Let&#x27;s start with stack variables because they are very simple.</p><p id="39fb7029-ee4b-8076-a0a5-efafe75fb77f" class="" dir="auto">Example:</p><pre id="39fb7029-ee4b-8063-8558-c4b830c03b00" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+    let x = 10;
+    let y = 20;
+
+    println!(&quot;{}&quot;, add(x, y));
+}
+
+fn add(a: i32, b: i32) -&gt; i32 {
+    let c = a + b;
+
+    c
+}</code></pre><p id="39fb7029-ee4b-8030-9640-f245aeacc89e" class="" dir="auto">Here,</p><pre id="39fb7029-ee4b-80d3-8c78-f454bf82674d" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">x
+y
+a
+b
+c</code></pre><p id="39fb7029-ee4b-80a6-ab8b-c93b07b604bf" class="" dir="auto">are all integers (<code>i32</code>).</p><p id="39fb7029-ee4b-808c-b00e-ec5c2f79959b" class="" dir="auto">Integers are stored on the <strong>Stack</strong>.</p><p id="39fb7029-ee4b-80f6-a784-e559abe9df80" class="" dir="auto">When <code>add()</code> finishes,</p><p id="39fb7029-ee4b-80fb-a278-d6861e1af09e" class="" dir="auto">its entire stack frame disappears.</p><pre id="39fb7029-ee4b-8012-b5d7-eeb2ed6fa3f7" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before returning
+
+Stack
+
++-------------+
+| c = 30      |
+| b = 20      |
+| a = 10      |
++-------------+
+| main()      |
++-------------+</code></pre><p id="39fb7029-ee4b-8033-b7d6-cd3069da3df0" class="" dir="auto">After returning,</p><pre id="39fb7029-ee4b-80d9-93da-deb2d0a038ab" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Stack
+
++-------------+
+| main()      |
++-------------+</code></pre><p id="39fb7029-ee4b-804b-b8f4-db7a3ab784dc" class="" dir="auto">Everything inside <code>add()</code> disappears automatically.</p><p id="39fb7029-ee4b-805c-ac61-dc8b71cb1241" class="" dir="auto">No memory problems.</p><p id="39fb7029-ee4b-806c-ba78-fc4c5b66a2ac" class="" dir="auto">No Ownership issues.</p><p id="39fb7029-ee4b-80c1-a7b2-dedaeb8e7b84" class="" dir="auto">Stack variables are easy because the Stack cleans itself automatically.</p><hr id="39fb7029-ee4b-805b-8da6-d0d5f86a3ae8" dir="auto"/><h1 id="39fb7029-ee4b-8011-b75a-f1818aab38bf" class="" dir="auto">Scope</h1><p id="39fb7029-ee4b-80b4-adb6-e415bc1f1f0e" class="" dir="auto">Another important concept is <strong>Scope</strong>.</p><p id="39fb7029-ee4b-80d5-8392-d2b756054634" class="" dir="auto">A variable only exists inside the block where it is created.</p><p id="39fb7029-ee4b-806f-8997-fa1b0fe14b92" class="" dir="auto">Example:</p><pre id="39fb7029-ee4b-8073-84e6-cdb194e2c63e" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+
+    let x = 10;
+
+    {
+        let y = 20;
+    }
+
+    println!(&quot;{}&quot;, y);
+}</code></pre><p id="39fb7029-ee4b-80c1-9b12-c17ff3e54be8" class="" dir="auto">This produces an error.</p><p id="39fb7029-ee4b-803d-b314-f350ed0f0e59" class="" dir="auto">Why?</p><p id="39fb7029-ee4b-80f1-89a5-fe0110553601" class="" dir="auto">Because <code>y</code> was created only inside this block.</p><pre id="39fb7029-ee4b-80b3-9855-f5b8b6929801" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">{
+    let y = 20;
+}</code></pre><p id="39fb7029-ee4b-80a0-a2a7-d87e36f6e535" class="" dir="auto">As soon as the closing brace <code>}</code> is reached,</p><p id="39fb7029-ee4b-80dc-be34-c6060c3fcebf" class="" dir="auto"><code>y</code> goes out of scope.</p><p id="39fb7029-ee4b-8077-b688-f3a4ef9a273d" class="" dir="auto">Think of scope like entering and leaving a room.</p><pre id="39fb7029-ee4b-8018-b37f-c1cc92858bca" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Main Room
+
+x lives here.
+
+------------------------
+
+Small Room
+
+y lives here.
+
+Leave room
+
+↓
+
+y disappears.</code></pre><p id="39fb7029-ee4b-80f9-908f-fa6814bc9c2c" class="" dir="auto">After leaving the room,</p><p id="39fb7029-ee4b-8076-a6a9-e86c9039404e" class="" dir="auto">trying to use <code>y</code> is impossible.</p><p id="39fb7029-ee4b-801e-85ab-e673ae77823b" class="" dir="auto">Rust gives a compile-time error.</p><hr id="39fb7029-ee4b-800d-84cd-cde675dd5d53" dir="auto"/><h1 id="39fb7029-ee4b-8068-ac22-ec8049a0daee" class="" dir="auto">Heap Variables — Things Become Interesting 😄</h1><p id="39fb7029-ee4b-8025-a6d8-cde1b2ecfa6c" class="" dir="auto">Stack variables are simple.</p><p id="39fb7029-ee4b-80aa-b4b2-f4658a4c9b46" class="" dir="auto">Heap variables are different.</p><p id="39fb7029-ee4b-806a-82b4-e634e9f8e18e" class="" dir="auto">Let&#x27;s bring Rihanna back.</p><p id="39fb7029-ee4b-80ab-8ba0-db685a422b6c" class="" dir="auto">Suppose Rihanna is currently dating:</p><pre id="39fb7029-ee4b-802f-afd5-dd9b5ef9026c" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80a2-947e-e9d77be1c8f5" class="" dir="auto">Everything is perfect.</p><p id="39fb7029-ee4b-80e4-90fc-e9836fb08f47" class="" dir="auto">Now suddenly another person arrives.</p><p id="39fb7029-ee4b-80bd-96a6-c5daecf1ca93" class="" dir="auto">His name is <strong>s2</strong>.</p><p id="39fb7029-ee4b-804a-b9f6-ca0bfd4c4328" class="" dir="auto">He says,</p><blockquote id="39fb7029-ee4b-8016-8ce0-c733b1e250f3" class="" dir="auto">&quot;Hey Rihanna, I want to date you now.&quot;</blockquote><p id="39fb7029-ee4b-805b-8a3e-fba15efa63ec" class="" dir="auto">Since Rihanna only believes in <strong>serious relationships</strong>,</p><p id="39fb7029-ee4b-807a-a4df-d3ebf4ebf2b9" class="" dir="auto">she immediately breaks up with her current boyfriend.</p><pre id="39fb7029-ee4b-800e-ae90-f3112cffc3b7" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8034-9046-c7d2b31cae4f" class="" dir="auto">After</p><pre id="39fb7029-ee4b-80cd-ae8f-fdb8abce316a" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 💔
+
+s2 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8044-afa8-d6c6492326af" class="" dir="auto">Notice something important.</p><p id="39fb7029-ee4b-8053-bff8-eb4c7b035972" class="" dir="auto">There are <strong>never two boyfriends.</strong></p><p id="39fb7029-ee4b-8007-87a7-c41a0c84be59" class="" dir="auto">Only one.</p><p id="39fb7029-ee4b-8060-8a40-c59d3a4de8ad" class="" dir="auto">Always.</p><p id="39fb7029-ee4b-8086-86e3-c044b972e37c" class="" dir="auto">Exactly like Rust Ownership.</p><hr id="39fb7029-ee4b-8081-8bf8-ece1676065e4" dir="auto"/><h1 id="39fb7029-ee4b-80e0-86d7-f462f5b93e73" class="" dir="auto">We Will See This in Code</h1><p id="39fb7029-ee4b-80e0-b3b6-d8cff3c24533" class="" dir="auto">In the next chapter, we&#x27;ll write code like this:</p><pre id="39fb7029-ee4b-8072-93c1-cde8a939ecb1" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s1 = String::from(&quot;hello&quot;);
+
+let s2 = s1;</code></pre><p id="39fb7029-ee4b-80e5-836a-f2e1fb6ff124" class="" dir="auto">At first glance, it looks like:</p><blockquote id="39fb7029-ee4b-80ab-b641-d46b2d065d4c" class="" dir="auto">&quot;s2 copied s1.&quot;</blockquote><p id="39fb7029-ee4b-803f-aa59-ded243527ac8" class="" dir="auto">But that&#x27;s <strong>not</strong> what actually happens.</p><p id="39fb7029-ee4b-80aa-96a0-d06e723ff166" class="" dir="auto">Instead,</p><p id="39fb7029-ee4b-80a5-a7a5-f61cabfb30ee" class="" dir="auto">Rihanna leaves <strong>s1</strong>...</p><p id="39fb7029-ee4b-80fe-a5ef-f4496451bf2a" class="" dir="auto">and starts dating <strong>s2</strong>.</p><pre id="39fb7029-ee4b-80a0-80b5-e4dfdf69d754" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+s1 ❤️ Hello</code></pre><p id="39fb7029-ee4b-8043-9705-c869ff8a383a" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-8061-8343-d7d520cf8823" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">After
+
+s1 💔
+
+s2 ❤️ Hello</code></pre><p id="39fb7029-ee4b-8036-87b0-dda4393ddaa2" class="" dir="auto">Poor <strong>s1</strong> becomes the ex.</p><p id="39fb7029-ee4b-8016-bc8c-f3d56736225a" class="" dir="auto">If <strong>s1</strong> now tries to text Rihanna...</p><pre id="39fb7029-ee4b-808e-8e90-e506f33e7308" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">println!(&quot;{}&quot;, s1);</code></pre><p id="39fb7029-ee4b-8069-9078-d51c14c87927" class="" dir="auto">Rust immediately replies:</p><pre id="39fb7029-ee4b-80db-a224-dc7ac7d06549" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">❌ Compile Error
+
+Sorry bro...
+
+She&#x27;s moved on.
+
+s1 is no longer the owner.</code></pre><p id="39fb7029-ee4b-8092-86bf-d4a521180b5d" class="" dir="auto">😂</p><hr id="39fb7029-ee4b-803f-a46b-dd0357927dfa" dir="auto"/><h1 id="39fb7029-ee4b-8093-af79-d4240f962342" class="" dir="auto">Why Does Rust Do This?</h1><p id="39fb7029-ee4b-8040-a3ba-fcc206ca30b6" class="" dir="auto">Imagine if Rihanna dated both people at the same time.</p><pre id="39fb7029-ee4b-80ae-8846-cff524374c43" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna ❤️ s2</code></pre><p id="39fb7029-ee4b-807c-bc2e-d6a43b390b03" class="" dir="auto">Now suppose <strong>s1</strong> breaks up first.</p><p id="39fb7029-ee4b-80d2-88e8-c90a55864b82" class="" dir="auto">He says,</p><blockquote id="39fb7029-ee4b-80d4-83c5-e2c341cebf34" class="" dir="auto">&quot;Delete all our photos.&quot;</blockquote><p id="39fb7029-ee4b-805a-9ef7-fbed5fcc72a1" class="" dir="auto">So the memory gets deleted.</p><p id="39fb7029-ee4b-8076-b1d1-dda8339246f4" class="" dir="auto">But <strong>s2</strong> still thinks Rihanna is his girlfriend.</p><p id="39fb7029-ee4b-80b3-80de-cee4f2e98ea8" class="" dir="auto">Now <strong>s2</strong> is pointing to something that no longer exists.</p><p id="39fb7029-ee4b-80d9-bcdd-f60122c5bb5c" class="" dir="auto">This creates dangerous problems like:</p><ul id="39fb7029-ee4b-8081-98c2-cf03e5031ff9" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Dangling pointers</li></ul><ul id="39fb7029-ee4b-80a9-b3d7-da8bf30b74a3" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Double free errors</li></ul><ul id="39fb7029-ee4b-80b4-887d-c6321d5367cf" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Use-after-free bugs</li></ul><p id="39fb7029-ee4b-8085-b5bc-c228ec0e5e1b" class="" dir="auto">Rust simply avoids this entire mess by allowing <strong>only one serious relationship at a time.</strong></p><p id="39fb7029-ee4b-802d-9cbe-eb1bbb2426f5" class="" dir="auto">No love triangles.</p><p id="39fb7029-ee4b-8079-8e18-fe44404133d4" class="" dir="auto">No casual relationships.</p><p id="39fb7029-ee4b-8068-b58a-fcb22dfe4c33" class="" dir="auto">No confusion.</p><hr id="39fb7029-ee4b-80f5-806b-e10df3fa6a8d" dir="auto"/><h1 id="39fb7029-ee4b-8009-9ffb-f853edcb30b0" class="" dir="auto">Chapter Summary</h1><ul id="39fb7029-ee4b-8046-abee-e4b8e104ebf7" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Rust manages memory using <strong>Ownership</strong>.</li></ul><ul id="39fb7029-ee4b-80f3-8ae5-f264793628a4" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Every value has <strong>exactly one owner</strong>.</li></ul><ul id="39fb7029-ee4b-80c3-98b1-f123bc5f8157" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Heap values are like <strong>Rihanna</strong>:<ul id="39fb7029-ee4b-8078-b377-f9203f889dff" class="bulleted-list" dir="auto"><li style="list-style-type:circle">She always wants one serious boyfriend.</li></ul><ul id="39fb7029-ee4b-8058-89aa-dace2d0fdcb6" class="bulleted-list" dir="auto"><li style="list-style-type:circle">She never stays single.</li></ul><ul id="39fb7029-ee4b-807e-8978-e7ff83e5f47e" class="bulleted-list" dir="auto"><li style="list-style-type:circle">She never dates two people at once.</li></ul><ul id="39fb7029-ee4b-8089-b8c6-ca7e4ad34ab4" class="bulleted-list" dir="auto"><li style="list-style-type:circle">If she has no boyfriend, she disappears (memory is freed).</li></ul></li></ul><ul id="39fb7029-ee4b-8073-b02f-e073f1e69292" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Stack variables are simple because they disappear automatically when they go out of scope.</li></ul><ul id="39fb7029-ee4b-80c9-8182-de363ffac69a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Heap variables follow Ownership rules, which we will explore in the next chapter.</li></ul><blockquote id="39fb7029-ee4b-806b-842a-dbb5a2c7ddf7" class="" dir="auto"><strong>Next Chapter:</strong> We will see what actually happens when Rihanna leaves her ex (<code>s1</code>) and starts dating her new boyfriend (<code>s2</code>), and why Rust refuses to let the ex talk to her anymore. 😄</blockquote><p id="39fb7029-ee4b-80dc-aeb6-d61162f994bf" class="" dir="auto">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

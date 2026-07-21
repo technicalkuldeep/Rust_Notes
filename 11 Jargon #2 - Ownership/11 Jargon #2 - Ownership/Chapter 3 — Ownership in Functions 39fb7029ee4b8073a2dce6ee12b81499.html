@@ -1,0 +1,881 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Chapter 3 — Ownership in Functions</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure,
+aside,
+details {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style></head><body><article id="39fb7029-ee4b-8073-a2dc-e6ee12b81499" class="page sans"><header><h1 class="page-title" dir="auto">Chapter 3 — Ownership in Functions</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="39fb7029-ee4b-80df-b73a-f4a8826d545f" class="" dir="auto">
+</p><p id="39fb7029-ee4b-804b-ba7e-db47ecd849bf" class="" dir="auto">In the previous chapter, we saw Rihanna leave <strong>s1</strong> and start dating <strong>s2</strong>.</p><p id="39fb7029-ee4b-80f1-8cc2-d5164ae04ebf" class="" dir="auto">Poor <strong>s1</strong> became the ex-boyfriend. 💔😂</p><p id="39fb7029-ee4b-80a7-aa39-ef28a688ab0e" class="" dir="auto">Now let&#x27;s imagine a different situation.</p><p id="39fb7029-ee4b-8023-9c70-f7ba3fbb1d4c" class="" dir="auto">Instead of Rihanna finding another boyfriend herself...</p><p id="39fb7029-ee4b-80bd-904a-d3b7999337b0" class="" dir="auto">Suppose <strong>s1</strong> decides to introduce Rihanna to one of his friends.</p><p id="39fb7029-ee4b-80eb-897e-feb99ccd8c98" class="" dir="auto">That friend is...</p><blockquote id="39fb7029-ee4b-804d-829c-c228d99c997c" class="" dir="auto"><strong>A Function.</strong></blockquote><p id="39fb7029-ee4b-8055-a812-e545999f7f82" class="" dir="auto">The question is:</p><blockquote id="39fb7029-ee4b-80a0-9c91-cbf8c2940e44" class="" dir="auto"><strong>When we pass a String to a function, who owns Rihanna now?</strong></blockquote><p id="39fb7029-ee4b-80a8-a2e8-cb674fae6248" class="" dir="auto">Let&#x27;s find out.</p><hr id="39fb7029-ee4b-807d-bfa2-d73bd2c1b6e9" dir="auto"/><h1 id="39fb7029-ee4b-8069-a84e-fd69998ce237" class="" dir="auto">Passing Numbers to Functions</h1><p id="39fb7029-ee4b-8043-985b-e2b02f1a0d21" class="" dir="auto">Let&#x27;s first look at integers.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" integrity="sha512-R/HpMlNfZZV6DxMhNz1dYJbBaPBVSOCqX8imo3uGUurhPDHRcXrBxkEVOjawwUwTMfOqT6t1eLYYQXIjFWCX/A==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><pre id="39fb7029-ee4b-806d-9321-db0863f492c4" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+    let x = 10;
+
+    print_number(x);
+
+    println!(&quot;{}&quot;, x);
+}
+
+fn print_number(number: i32) {
+    println!(&quot;{}&quot;, number);
+}</code></pre><p id="39fb7029-ee4b-80ae-97d3-daf0733875a6" class="" dir="auto">Output</p><pre id="39fb7029-ee4b-809f-a4ca-f83470452a53" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">10
+10</code></pre><p id="39fb7029-ee4b-8023-a20c-fa6696f46601" class="" dir="auto">Notice something interesting.</p><p id="39fb7029-ee4b-80b2-9078-cb7282c6eea7" class="" dir="auto">Even after calling</p><pre id="39fb7029-ee4b-8029-ba8c-f13f36b8424f" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">print_number(x);</code></pre><p id="39fb7029-ee4b-8026-a319-fff7f8616fbb" class="" dir="auto">we can still use</p><pre id="39fb7029-ee4b-80ae-afc0-dcd4a0ccef28" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">println!(&quot;{}&quot;, x);</code></pre><p id="39fb7029-ee4b-8044-bce8-cba9c7d482bb" class="" dir="auto">Why?</p><p id="39fb7029-ee4b-8073-b617-d561752f6f71" class="" dir="auto">Because integers are stored on the <strong>Stack</strong>.</p><p id="39fb7029-ee4b-8099-b6e9-c84237084546" class="" dir="auto">Rust simply <strong>copies</strong> them.</p><p id="39fb7029-ee4b-8056-a3f3-d2ac4c9ea6c9" class="" dir="auto">Think of it like writing the same number on another piece of paper.</p><pre id="39fb7029-ee4b-8028-8daa-cc08b4965302" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Main
+
+x = 10</code></pre><p id="39fb7029-ee4b-8026-9b13-caae478f3ea9" class="" dir="auto">↓</p><p id="39fb7029-ee4b-801e-8814-c9c206d0208d" class="" dir="auto">Function receives</p><pre id="39fb7029-ee4b-808a-8188-d406110e72d6" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">number = 10</code></pre><p id="39fb7029-ee4b-80b9-9f63-d20bcad118bd" class="" dir="auto">Now there are two completely independent copies.</p><p id="39fb7029-ee4b-802e-be41-f9384376f9ae" class="" dir="auto">Nobody loses ownership.</p><hr id="39fb7029-ee4b-8083-96ed-e6785a1b6239" dir="auto"/><h1 id="39fb7029-ee4b-805e-97fe-c7a60ba58b75" class="" dir="auto">Passing a String to a Function</h1><p id="39fb7029-ee4b-80a0-8b49-deef577fe836" class="" dir="auto">Now let&#x27;s replace the integer with a String.</p><pre id="39fb7029-ee4b-8015-97c9-c4a5c6e95837" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+
+    let my_string = String::from(&quot;Hello&quot;);
+
+    takes_ownership(my_string);
+
+    println!(&quot;{}&quot;, my_string);
+}
+
+fn takes_ownership(some_string: String) {
+
+    println!(&quot;{}&quot;, some_string);
+
+}</code></pre><p id="39fb7029-ee4b-80c0-a628-e4c8fe36c506" class="" dir="auto">Will this compile?</p><p id="39fb7029-ee4b-80f8-bf23-db8935d6da41" class="" dir="auto"><strong>No.</strong></p><p id="39fb7029-ee4b-80d9-9583-ec311b5ceb2b" class="" dir="auto">Rust gives an error.</p><pre id="39fb7029-ee4b-800a-b271-c42cb77d48fb" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">error[E0382]: borrow of moved value: `my_string`</code></pre><hr id="39fb7029-ee4b-80b4-9708-c75d421333a0" dir="auto"/><h1 id="39fb7029-ee4b-80b1-90e6-fe0f2fc27505" class="" dir="auto">The Rihanna Story Continues 😂❤️</h1><p id="39fb7029-ee4b-80c3-88c0-da9f3ef4b6d4" class="" dir="auto">Initially</p><pre id="39fb7029-ee4b-8090-8fdc-d558fcc58a01" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">my_string ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-802e-8bb6-d7e248858e17" class="" dir="auto">Everything is fine.</p><p id="39fb7029-ee4b-8095-89eb-cc24fa2efad0" class="" dir="auto">Now this line executes.</p><pre id="39fb7029-ee4b-8028-93ee-e49e778c14bd" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">takes_ownership(my_string);</code></pre><p id="39fb7029-ee4b-8034-937f-f79640af9672" class="" dir="auto">Imagine the function says</p><blockquote id="39fb7029-ee4b-80a2-a340-c507989905f2" class="" dir="auto">&quot;Hey Rihanna...</blockquote><p id="39fb7029-ee4b-80c5-a6f0-db1378b7167c" class="" dir="auto">come inside.</p><p id="39fb7029-ee4b-8086-9a39-d80b7195f286" class="" dir="auto">I need to talk to you.&quot;</p><p id="39fb7029-ee4b-80b0-8501-ccf320b7f6ae" class="" dir="auto">Rihanna replies</p><blockquote id="39fb7029-ee4b-80b7-b1e4-cb7899cd5677" class="" dir="auto">&quot;Sure.&quot;</blockquote><p id="39fb7029-ee4b-8082-979a-d3d18287b499" class="" dir="auto">But remember her rule.</p><p id="39fb7029-ee4b-80a0-8fc0-c9b3c1a39891" class="" dir="auto">She only stays in <strong>one serious relationship</strong>.</p><p id="39fb7029-ee4b-80e3-9ef9-f8bdc5d5966c" class="" dir="auto">So she immediately leaves <strong>my_string</strong>...</p><p id="39fb7029-ee4b-803e-a3b5-d50911620bc1" class="" dir="auto">and starts dating the function parameter.</p><pre id="39fb7029-ee4b-80fd-b03e-cd3220b752f2" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+my_string ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80c8-a992-cc958d4860fa" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-80e1-8768-e9ea020c1bd3" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">After
+
+my_string 💔
+
+some_string ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8080-b0f4-c57df76017c1" class="" dir="auto">Poor <strong>my_string</strong> just became the ex-boyfriend.</p><p id="39fb7029-ee4b-8083-b45a-feaa4d8141b9" class="" dir="auto">😂😂</p><hr id="39fb7029-ee4b-8079-bab3-cf4aef7347ff" dir="auto"/><h1 id="39fb7029-ee4b-8056-97be-e4da41272719" class="" dir="auto">Memory View</h1><p id="39fb7029-ee4b-8096-abf3-d62256e62760" class="" dir="auto">Before function call</p><pre id="39fb7029-ee4b-8053-8c36-f5e75f5475be" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">STACK                          HEAP
+
+my_string  ───────────────►  &quot;Hello&quot;</code></pre><p id="39fb7029-ee4b-8016-8b10-d8cd702aaabb" class="" dir="auto">After entering the function</p><pre id="39fb7029-ee4b-80ca-a61c-eb2a08eef2af" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">STACK                          HEAP
+
+my_string ❌ Invalid
+
+some_string ─────────────► &quot;Hello&quot;</code></pre><p id="39fb7029-ee4b-8057-ab04-cdce22ed68e6" class="" dir="auto">Ownership has moved.</p><p id="39fb7029-ee4b-8063-9e94-c4ca9686ab72" class="" dir="auto">The heap memory never moved.</p><p id="39fb7029-ee4b-80ef-beed-f8078bac54be" class="" dir="auto">Only the owner changed.</p><hr id="39fb7029-ee4b-8014-93a1-dc8821ce581e" dir="auto"/><h1 id="39fb7029-ee4b-8014-85bd-d58e2eb0afa7" class="" dir="auto">What Happens When the Function Ends?</h1><p id="39fb7029-ee4b-8081-a0a4-cfcc0918a05c" class="" dir="auto">Now imagine the function finishes.</p><pre id="39fb7029-ee4b-800a-be65-c9eec9472edd" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn takes_ownership(some_string: String) {
+
+    println!(&quot;{}&quot;, some_string);
+
+}</code></pre><p id="39fb7029-ee4b-802a-95d9-f0f7611495b2" class="" dir="auto">The closing brace is reached.</p><pre id="39fb7029-ee4b-8098-982d-d9fd9d391ef5" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">}</code></pre><p id="39fb7029-ee4b-800a-a098-f30af10c2e59" class="" dir="auto">The function goes out of scope.</p><p id="39fb7029-ee4b-80d3-b9e6-c87a3f89b997" class="" dir="auto">Since <strong>some_string</strong> is now Rihanna&#x27;s owner...</p><p id="39fb7029-ee4b-80ee-b7f9-fba540d58840" class="" dir="auto">Rust says</p><blockquote id="39fb7029-ee4b-8027-9053-fb77fbc7142a" class="" dir="auto">&quot;No owner left?&quot;</blockquote><blockquote id="39fb7029-ee4b-803d-82dd-f6732b94d266" class="" dir="auto">&quot;Time to clean up.&quot;</blockquote><p id="39fb7029-ee4b-8056-b23c-fc17581dbf83" class="" dir="auto">The heap memory gets automatically deallocated.</p><pre id="39fb7029-ee4b-8099-9f47-d4d10659f1ba" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Before
+
+some_string ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80a3-8313-e2270d669df3" class="" dir="auto">↓</p><p id="39fb7029-ee4b-8016-8597-dd7d918957e8" class="" dir="auto">Function ends</p><p id="39fb7029-ee4b-80d5-96fb-d755d0eccd7c" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-80a8-a8fb-c50658977292" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">some_string disappears
+
+Rihanna 💀</code></pre><p id="39fb7029-ee4b-8023-8af6-c5d51d582c5c" class="" dir="auto">The String is removed from memory.</p><hr id="39fb7029-ee4b-80ce-b7fc-d6907e3166c7" dir="auto"/><h1 id="39fb7029-ee4b-8015-816f-c97d7c8bcb8d" class="" dir="auto">Why Can&#x27;t We Use my_string Again?</h1><p id="39fb7029-ee4b-80a1-988b-f4aeacc67d28" class="" dir="auto">After the function call</p><pre id="39fb7029-ee4b-804f-9314-fff78c32293b" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">println!(&quot;{}&quot;, my_string);</code></pre><p id="39fb7029-ee4b-8054-a44d-f503a84dcdd1" class="" dir="auto">Rust immediately stops us.</p><p id="39fb7029-ee4b-8060-9549-d7562d9190f3" class="" dir="auto">Why?</p><p id="39fb7029-ee4b-8036-b2e4-ff9689f1d29a" class="" dir="auto">Because</p><blockquote id="39fb7029-ee4b-801c-8b16-c1eba15bf346" class="" dir="auto"><strong>my_string is no longer the owner.</strong></blockquote><p id="39fb7029-ee4b-80ba-9c38-c7df434ce042" class="" dir="auto">It lost Rihanna.</p><p id="39fb7029-ee4b-80e8-a507-cc70fbbf7402" class="" dir="auto">She has already left.</p><p id="39fb7029-ee4b-80ba-a75d-f7038670d2f2" class="" dir="auto">Rust says</p><blockquote id="39fb7029-ee4b-800a-84b8-fa4b59442fff" class="" dir="auto">&quot;Bro...</blockquote><p id="39fb7029-ee4b-8098-878d-fd9cd6358940" class="" dir="auto">she literally moved into another function.</p><p id="39fb7029-ee4b-80b7-957f-d1bf7bb15461" class="" dir="auto">You have no relationship with her anymore.&quot;</p><p id="39fb7029-ee4b-802b-9831-ca166a884150" class="" dir="auto">😂</p><hr id="39fb7029-ee4b-80ac-909a-f19d5012584e" dir="auto"/><h1 id="39fb7029-ee4b-8050-8376-e0d5caaf639d" class="" dir="auto">Let&#x27;s Compare Numbers vs Strings</h1><h2 id="39fb7029-ee4b-8060-a6a6-f59998477910" class="" dir="auto">Numbers</h2><pre id="39fb7029-ee4b-80ea-aaa5-dd8d77f23922" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let x = 10;
+
+print_number(x);</code></pre><p id="39fb7029-ee4b-8089-84ee-c7bf5ed5f98f" class="" dir="auto">Rust performs</p><blockquote id="39fb7029-ee4b-80fa-b131-f91796ac9cfb" class="" dir="auto">Copy</blockquote><pre id="39fb7029-ee4b-8043-98b3-d5270504b7b9" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Main
+
+x = 10
+
+↓
+
+Function
+
+number = 10</code></pre><p id="39fb7029-ee4b-8052-ab73-d86c1006fb06" class="" dir="auto">Both variables are valid.</p><hr id="39fb7029-ee4b-8020-b948-e586a0574706" dir="auto"/><h2 id="39fb7029-ee4b-80a0-91b8-eab68c7b68d0" class="" dir="auto">Strings</h2><pre id="39fb7029-ee4b-80ed-8104-f762ccb357e1" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s = String::from(&quot;Hello&quot;);
+
+takes_ownership(s);</code></pre><p id="39fb7029-ee4b-8001-875c-e81b1cbdc6b7" class="" dir="auto">Rust performs</p><blockquote id="39fb7029-ee4b-803d-a23f-f74bb887d03e" class="" dir="auto">Move</blockquote><pre id="39fb7029-ee4b-803d-a7e1-c5341eeb4771" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Main
+
+s ❤️ String</code></pre><p id="39fb7029-ee4b-8049-aa7f-d51a34f31681" class="" dir="auto">↓</p><pre id="39fb7029-ee4b-8099-abe3-d48973c18262" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Function
+
+some_string ❤️ String</code></pre><p id="39fb7029-ee4b-8060-9383-d9fb6270cb43" class="" dir="auto">The original variable becomes invalid.</p><hr id="39fb7029-ee4b-8043-9fa4-ec22b9c66325" dir="auto"/><h1 id="39fb7029-ee4b-8017-9aef-f2e531fcc396" class="" dir="auto">Returning Ownership Back</h1><p id="39fb7029-ee4b-80ba-a846-cdb920b90998" class="" dir="auto">Now imagine the function is very polite.</p><p id="39fb7029-ee4b-8008-9fe0-f9b6b1cc29cc" class="" dir="auto">Instead of stealing Rihanna forever...</p><p id="39fb7029-ee4b-80e8-b432-fb88717c4be7" class="" dir="auto">it says</p><blockquote id="39fb7029-ee4b-80cf-9b08-dad9d8021a38" class="" dir="auto">&quot;Thanks.</blockquote><p id="39fb7029-ee4b-80f3-99de-df3296e21a08" class="" dir="auto">I&#x27;m done talking.</p><p id="39fb7029-ee4b-8004-8a45-cf95fe7aed34" class="" dir="auto">Take her back.&quot;</p><p id="39fb7029-ee4b-8004-862e-d9ed2bc72b43" class="" dir="auto">😂</p><p id="39fb7029-ee4b-8030-9fa9-c844bf4fca27" class="" dir="auto">Rust allows this.</p><pre id="39fb7029-ee4b-8031-856a-df41ab571119" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+
+    let s1 = String::from(&quot;Hello&quot;);
+
+    let s2 = takes_ownership(s1);
+
+    println!(&quot;{}&quot;, s2);
+
+}
+
+fn takes_ownership(some_string: String) -&gt; String {
+
+    println!(&quot;{}&quot;, some_string);
+
+    some_string
+
+}</code></pre><p id="39fb7029-ee4b-801d-94ce-d8bf917f455a" class="" dir="auto">Output</p><pre id="39fb7029-ee4b-801a-b123-e67eabd7ba82" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">Hello
+Hello</code></pre><p id="39fb7029-ee4b-80cd-9dff-ed7b0bfdb79f" class="" dir="auto">What happened?</p><p id="39fb7029-ee4b-80c6-83b0-f12d015f4f5d" class="" dir="auto">Initially</p><pre id="39fb7029-ee4b-80f8-9c4b-ff4144639095" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8068-8984-f6082888583c" class="" dir="auto">↓</p><p id="39fb7029-ee4b-807c-b721-f67ec7eae6b1" class="" dir="auto">Function</p><pre id="39fb7029-ee4b-8012-bf6c-cbedcab21f1a" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">some_string ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80a3-9de3-d8c42a20c061" class="" dir="auto">↓</p><p id="39fb7029-ee4b-8054-8381-d03805820109" class="" dir="auto">Function returns</p><pre id="39fb7029-ee4b-8067-b678-fef257a725ec" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s2 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80dc-89aa-deffc37177f7" class="" dir="auto">Notice</p><p id="39fb7029-ee4b-8026-82a2-d1234be8e172" class="" dir="auto">Rihanna changed owners again.</p><p id="39fb7029-ee4b-8069-8e49-f13f194fa182" class="" dir="auto">She went</p><pre id="39fb7029-ee4b-8050-a3a2-ef5fd933cb56" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1
+
+↓
+
+some_string
+
+↓
+
+s2</code></pre><p id="39fb7029-ee4b-807b-b057-fb2e0f9549d8" class="" dir="auto">She never had two owners.</p><hr id="39fb7029-ee4b-8013-806d-d93ebdf6a146" dir="auto"/><h1 id="39fb7029-ee4b-8088-8d11-f5c2c0baee5f" class="" dir="auto">Why Didn&#x27;t s1 Get Her Back?</h1><p id="39fb7029-ee4b-8090-a746-ce3dc837e216" class="" dir="auto">Good question.</p><p id="39fb7029-ee4b-80d6-9e47-f89ff30c24a1" class="" dir="auto">When the function returned,</p><p id="39fb7029-ee4b-8034-aaf4-cd8b7b15d1e0" class="" dir="auto">Rust didn&#x27;t magically remember the old boyfriend.</p><p id="39fb7029-ee4b-8016-b498-eebc2555876d" class="" dir="auto">The function simply handed Rihanna to <strong>whoever received the return value.</strong></p><p id="39fb7029-ee4b-8096-9401-cba642e41a37" class="" dir="auto">That&#x27;s why</p><pre id="39fb7029-ee4b-807d-ac05-e789785ca6e3" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s2 = takes_ownership(s1);</code></pre><p id="39fb7029-ee4b-803f-9539-d67b751584a1" class="" dir="auto">creates</p><pre id="39fb7029-ee4b-80f6-a8d4-fa8ba21f2a30" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s2 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-8038-a723-e10e529efbf3" class="" dir="auto">instead of</p><pre id="39fb7029-ee4b-80cc-a077-f2fd7363a020" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-80b2-9797-c92078db2331" class="" dir="auto">Poor <strong>s1</strong> is still the ex.</p><p id="39fb7029-ee4b-805e-a301-e5eb207e6017" class="" dir="auto">😂</p><hr id="39fb7029-ee4b-8028-9ae9-f0b910828d6f" dir="auto"/><h1 id="39fb7029-ee4b-80a0-bd9a-f6a618460268" class="" dir="auto">Can s1 Become Her Boyfriend Again?</h1><p id="39fb7029-ee4b-8025-abb6-c1ef8317085b" class="" dir="auto">Yes!</p><p id="39fb7029-ee4b-806f-98a3-da9f242a3f5f" class="" dir="auto">He simply has to receive ownership again.</p><pre id="39fb7029-ee4b-801b-931d-c76602b0b0cc" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">fn main() {
+
+    let mut s1 = String::from(&quot;Hello&quot;);
+
+    s1 = takes_ownership(s1);
+
+    println!(&quot;{}&quot;, s1);
+
+}
+
+fn takes_ownership(some_string: String) -&gt; String {
+
+    some_string
+
+}</code></pre><p id="39fb7029-ee4b-80e0-958b-ef6475047297" class="" dir="auto">Now the ownership flow is</p><pre id="39fb7029-ee4b-80ad-8d8b-f92c4cbd4590" class="code code-wrap"><code style="white-space:pre-wrap;word-break:break-all">s1 ❤️ Rihanna
+
+↓
+
+Function
+
+↓
+
+s1 ❤️ Rihanna</code></pre><p id="39fb7029-ee4b-805d-adbd-de9ae2bdf296" class="" dir="auto">The same variable becomes the owner again because it receives the returned value.</p><hr id="39fb7029-ee4b-80a8-bfa9-d804e6d55c4b" dir="auto"/><h1 id="39fb7029-ee4b-803f-8846-e7d087a8145f" class="" dir="auto">But This Looks Annoying...</h1><p id="39fb7029-ee4b-80fa-8a8e-e0b40ff13daa" class="" dir="auto">Imagine every function call looked like this.</p><pre id="39fb7029-ee4b-805e-bc4b-ee116398b960" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s = takes_ownership(s);</code></pre><p id="39fb7029-ee4b-80ba-8a3e-e95dd1d4974a" class="" dir="auto">or</p><pre id="39fb7029-ee4b-80d2-a901-c22f8841011d" class="code code-wrap" data-notion-code-syntax="rust"><code class="language-rust" style="white-space:pre-wrap;word-break:break-all">let s = another_function(s);
+
+let s = third_function(s);
+
+let s = fourth_function(s);</code></pre><p id="39fb7029-ee4b-80bd-8a6f-e3bd9edb04b2" class="" dir="auto">We&#x27;re constantly passing ownership around like Rihanna is being dropped off and picked up after every conversation.</p><p id="39fb7029-ee4b-8003-be78-f628e8473b43" class="" dir="auto">😂</p><p id="39fb7029-ee4b-8010-a430-d3a95c0bd437" class="" dir="auto">This works...</p><p id="39fb7029-ee4b-8016-8b56-f3439cf81677" class="" dir="auto">but it&#x27;s inconvenient.</p><hr id="39fb7029-ee4b-804a-a3d6-f5142ec8a8a8" dir="auto"/><h1 id="39fb7029-ee4b-80b9-8706-eda52a4e0d7e" class="" dir="auto">Is There a Better Way?</h1><p id="39fb7029-ee4b-80a9-b2ea-dc684105b4c1" class="" dir="auto">Suppose <strong>s1</strong> doesn&#x27;t want to break up with Rihanna.</p><p id="39fb7029-ee4b-80fe-b26e-ca68edc0350b" class="" dir="auto">He just wants his friend (the function) to <strong>talk to her for a few minutes</strong>.</p><p id="39fb7029-ee4b-80e6-a1c7-c818d13b6a3f" class="" dir="auto">No breakup.</p><p id="39fb7029-ee4b-806f-9056-f510f5b80b7b" class="" dir="auto">No ownership transfer.</p><p id="39fb7029-ee4b-8026-b5b0-ec2bf42f660b" class="" dir="auto">Just...</p><blockquote id="39fb7029-ee4b-8091-97ea-d01b9d58d9c1" class="" dir="auto">&quot;Bro, you can hang out with her, but she&#x27;s still my girlfriend.&quot;</blockquote><p id="39fb7029-ee4b-80e6-9c87-c4defe844edb" class="" dir="auto">😄</p><p id="39fb7029-ee4b-80b6-9d89-c96f03644d18" class="" dir="auto">Can Rust do that?</p><p id="39fb7029-ee4b-8057-ac3c-f7ab3e63df17" class="" dir="auto"><strong>Yes!</strong></p><p id="39fb7029-ee4b-804f-9329-db6caefb098e" class="" dir="auto">That is exactly what <strong>References (&amp;)</strong> and <strong>Borrowing</strong> are designed for.</p><p id="39fb7029-ee4b-80a9-9219-c35e272eabbf" class="" dir="auto">And that&#x27;s what we&#x27;ll learn in the next chapter.</p><hr id="39fb7029-ee4b-801e-90ed-d2fb80c5c9a4" dir="auto"/><h1 id="39fb7029-ee4b-8002-b64a-fbd8d6424b96" class="" dir="auto">Chapter Summary</h1><ul id="39fb7029-ee4b-80d1-b1f1-eee68e770448" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Passing <strong>stack values</strong> (like integers) to functions creates a <strong>copy</strong>, so the original variable remains usable.</li></ul><ul id="39fb7029-ee4b-8093-b89a-d227546ae96f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Passing <strong>heap values</strong> (like <code>String</code>) transfers <strong>ownership</strong> to the function.</li></ul><ul id="39fb7029-ee4b-8035-a2d4-f377ecc9f898" class="bulleted-list" dir="auto"><li style="list-style-type:disc">When the function ends, the owner goes out of scope, and Rust automatically frees the memory.</li></ul><ul id="39fb7029-ee4b-80f6-b3f8-f01941e3af66" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Ownership can be returned using the function&#x27;s return value.</li></ul><ul id="39fb7029-ee4b-804f-a217-f555811f925a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Passing ownership back and forth works, but it quickly becomes cumbersome.</li></ul><blockquote id="39fb7029-ee4b-80e5-8092-f293fec0b56c" class="" dir="auto"><strong>Next Chapter:</strong> Instead of transferring ownership every time, we&#x27;ll learn how a function can temporarily <strong>borrow</strong> a value using <strong>References (</strong><code><strong>&amp;</strong></code><strong>)</strong>—like letting someone spend time with Rihanna without becoming her new boyfriend. 😄</blockquote></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
